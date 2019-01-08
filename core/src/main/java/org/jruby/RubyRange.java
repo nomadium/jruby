@@ -774,7 +774,7 @@ public class RubyRange extends RubyObject {
             return Helpers.invokeSuper(context, this, block);
         }
 
-        int cmp = RubyComparable.cmpint(context, invokedynamic(context, begin, MethodNames.OP_CMP, end), begin, end);
+        int cmp = isEndless ? -1 : RubyComparable.cmpint(context, invokedynamic(context, begin, MethodNames.OP_CMP, end), begin, end);
         if (cmp > 0 || (cmp == 0 && isExclusive)) {
             return context.nil;
         }
@@ -818,6 +818,8 @@ public class RubyRange extends RubyObject {
 
     @JRubyMethod(frame = true)
     public IRubyObject min(ThreadContext context, IRubyObject arg, Block block) {
+        if (isEndless && block.isGiven()) throw context.runtime.newRangeError("cannot get the minimum of endless range with custom comparison method");
+        if (isEndless) return first(context, arg);
         return Helpers.invokeSuper(context, this, arg, block);
     }
 
