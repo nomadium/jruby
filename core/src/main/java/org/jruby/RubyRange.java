@@ -786,6 +786,8 @@ public class RubyRange extends RubyObject {
     public IRubyObject max(ThreadContext context, Block block) {
         boolean isNumeric = end instanceof RubyNumeric;
 
+        if (isEndless) return context.nil;
+
         if (block.isGiven() || (isExclusive && !isNumeric)) {
             return Helpers.invokeSuper(context, this, block);
         }
